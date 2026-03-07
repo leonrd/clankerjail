@@ -47,7 +47,6 @@ services:
       - proxy
     environment:
       - TZ=${TZ:-UTC}
-      - HISTDIR=/home/${CLANKER_USER:-clanker}/.history
       - ANTHROPIC_BASE_URL=http://proxy:10001/anthropic-api
       - ANTHROPIC_API_KEY="" # Important: Must be explicitly empty
       - ANTHROPIC_AUTH_TOKEN="sk-proxy"
@@ -58,11 +57,7 @@ services:
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=1073741824   # 1 G
     volumes:
-      - "${CLANKERJAIL_CLANKER_USER_HOME_DIR:-${CLANKERJAIL_CONFIG_DIR:-${HOME}/.config/clankerjail}/home/${CLANKER_USER:-clanker}}/.cache:/home/${CLANKER_USER:-clanker}/.cache"
-      - "${CLANKERJAIL_CLANKER_USER_HOME_DIR:-${CLANKERJAIL_CONFIG_DIR:-${HOME}/.config/clankerjail}/home/${CLANKER_USER:-clanker}}/.claude:/home/${CLANKER_USER:-clanker}/.claude"
-      - "${CLANKERJAIL_CLANKER_USER_HOME_DIR:-${CLANKERJAIL_CONFIG_DIR:-${HOME}/.config/clankerjail}/home/${CLANKER_USER:-clanker}}/.codex:/home/${CLANKER_USER:-clanker}/.codex"
-      - "${CLANKERJAIL_CLANKER_USER_HOME_DIR:-${CLANKERJAIL_CONFIG_DIR:-${HOME}/.config/clankerjail}/home/${CLANKER_USER:-clanker}}/.config/opencode:/home/${CLANKER_USER:-clanker}/.config/opencode"
-      - "${CLANKERJAIL_CLANKER_USER_HOME_DIR:-${CLANKERJAIL_CONFIG_DIR:-${HOME}/.config/clankerjail}/home/${CLANKER_USER:-clanker}}/.history:/home/${CLANKER_USER:-clanker}/.history"
+      - "${CLANKERJAIL_CLANKER_USER_HOME_DIR:-${CLANKERJAIL_CONFIG_DIR:-${HOME}/.config/clankerjail}/home/${CLANKER_USER:-clanker}}:/home/${CLANKER_USER:-clanker}"
     networks:
       - proxy-internal
     logging: *default-logging

@@ -83,6 +83,46 @@ RUN groupadd --gid $CLANKER_GID $CLANKER_USER \
 # Switch to non-root, non-sudoer clanker user
 USER $CLANKER_USER
 
+COPY --chown=$CLANKER_USER dotfiles/ /home/$CLANKER_USER/
+
+# Install ohmyzsh
+RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" \
+    && mv $HOME/.zshrc $HOME/.zshrc.post-oh-my-zsh \
+    && mv ~/.zshrc.pre-oh-my-zsh ~/.zshrc
+
+# Install zsh plugins
+RUN git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-$HOME/.oh-my-zsh}/custom}/plugins/zsh-completions
+RUN git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+RUN git clone https://github.com/Aloxaf/fzf-tab ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fzf-tab
+
+# Set global node prefix to $HOME subdir
+RUN [ -f "$HOME/.profile" ] && . $HOME/.profile \
+    && mkdir -p $NPM_PREFIX \
+    && npm config set prefix "$NPM_PREFIX"
+
+# Install n
+RUN [ -f "$HOME/.profile" ] && . $HOME/.profile \
+    && npm install -g n
+
+# Install node through n
+ARG NODE_VERSION=20.20
+RUN [ -f "$HOME/.profile" ] && . $HOME/.profile \
+    && n $NODE_VERSION \
+    && npm install -g yarn \
+    && ls -la `which node` && ls -la `which npm` && node -v && yarn --version
+
+# Install Claude Code
+RUN [ -f "$HOME/.profile" ] && . $HOME/.profile \
+    && curl -fsSL https://claude.ai/install.sh | bash
+
+# Install Codex CLI
+RUN [ -f "$HOME/.profile" ] && . $HOME/.profile \
+    && npm i -g @openai/codex
+
+# Install OpenCode
+RUN [ -f "$HOME/.profile" ] && . $HOME/.profile \
+    && curl -fsSL https://opencode.ai/install | bash
+
 # Switch to workspace
 WORKDIR /workspace
 

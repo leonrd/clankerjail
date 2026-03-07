@@ -1,0 +1,17 @@
+.DS_Store
+
+plugged/
+
+*.swp
+
+tmp/*
+!tmp/backup/.gitkeep
+!tmp/swap/.gitkeep
+!tmp/undo/.gitkeep
+
+.netrwhist
+
+before.vimrc
+extra.vimrc
+local.vimrc
+after.vimrc

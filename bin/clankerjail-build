@@ -13,4 +13,5 @@ docker compose \
     --build-arg CLANKER_USER=${CLANKER_USER} \
     --build-arg CLANKER_UID=${CLANKER_UID} \
     --build-arg CLANKER_GID=${CLANKER_GID} \
-    --build-arg GIT_DELTA_VERSION=${GIT_DELTA_VERSION:-"0.18.2"}
+    --build-arg GIT_DELTA_VERSION=${GIT_DELTA_VERSION:-"0.18.2"} \
+    --build-arg NODE_VERSION=${NODE_VERSION:-"20.20"}

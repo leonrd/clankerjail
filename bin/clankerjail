@@ -26,6 +26,7 @@ if [ "${SKIP_IMAGE_BUILD}" != 1 ]; then
     CLANKER_UID=${CLANKER_UID} \
     CLANKER_GID=${CLANKER_GID} \
     GIT_DELTA_VERSION=${GIT_DELTA_VERSION} \
+    NODE_VERSION=${NODE_VERSION} \
     ${__dir}/clankerjail-build
 fi
 
@@ -49,6 +50,11 @@ esac
 if [ "${DRY_RUN}" != 1 ]; then
   mkdir -p "${CLANKERJAIL_CONFIG_DIR}"
   mkdir -p "${CLANKERJAIL_CLANKER_USER_HOME_DIR}"
+  mkdir -p "${CLANKERJAIL_CLANKER_USER_HOME_DIR}/.cache"
+  mkdir -p "${CLANKERJAIL_CLANKER_USER_HOME_DIR}/.claude"
+  mkdir -p "${CLANKERJAIL_CLANKER_USER_HOME_DIR}/.codex"
+  mkdir -p "${CLANKERJAIL_CLANKER_USER_HOME_DIR}/.config/opencode"
+  mkdir -p "${CLANKERJAIL_CLANKER_USER_HOME_DIR}/.history"
 fi
 
 run_compose() {

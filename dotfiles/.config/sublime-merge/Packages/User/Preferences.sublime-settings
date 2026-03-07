@@ -1,0 +1,12 @@
+{
+	"diff_style": "inline",
+	"theme": "Merge Dark.sublime-theme",
+	"side_bar_layout": "columns",
+	"always_show_command_status": true,
+	"ignore_diff_white_space": false,
+	"image_diff_style": "side-by-side",
+	"render_commit_dialog_message_at_top": true,
+	"expand_merge_commits_by_default": true,
+	"update_check": false,
+	"font_size": 9,
+}

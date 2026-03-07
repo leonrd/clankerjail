@@ -1,0 +1,26 @@
+export PATH="$HOME/bin:$HOME/.local/bin:$PATH"
+
+export PATH="$HOME/.npm-global/bin:$PATH"
+export PATH="$HOME/.n/bin:$PATH"
+export DEV_TOOLS_PATH="$HOME/dev/tools/bin"
+export PATH="$DEV_TOOLS_PATH:$PATH"
+export PATH="$HOME/dev/tools/flutter/bin:$PATH"
+export PATH="$HOME/dev/space/flutter/framework/bin:$PATH"
+export PATH="$HOME/dev/space/flutter/devtools/tool/bin:$PATH"
+
+if [ $(uname -s) = 'Darwin' ]; then
+  # LLVM paths
+  # These do not play nice with React Native
+  # export PATH="/usr/local/opt/llvm/bin:$PATH"
+  # export LDFLAGS="-L/usr/local/opt/llvm/lib"
+  # export CPPFLAGS="-I/usr/local/opt/llvm/include"
+  export PATH="/usr/local/opt/imagemagick@6/bin:$PATH"
+  export PATH="/usr/local/opt/openssl/bin:$PATH"
+fi
+
+# Android tools
+export PATH="$HOME/dev/tools/android-sdk/platform-tools:$PATH"
+export PATH="$HOME/dev/tools/android-sdk/tools:$PATH"
+export PATH="$HOME/dev/tools/android-sdk/tools/bin:$PATH"
+export PATH="$HOME/dev/tools/android-sdk/emulator:$PATH"
+

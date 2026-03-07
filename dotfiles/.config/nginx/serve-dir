@@ -1,0 +1,4 @@
+#!/bin/sh
+port="${1:-8000}";
+sleep 1 && open "http://localhost:${port}/" &
+mkdir -p tmp/logs && openresty -p tmp -c $HOME/.config/nginx/serve-dir.nginx.conf

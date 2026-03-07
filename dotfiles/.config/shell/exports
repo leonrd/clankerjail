@@ -1,0 +1,84 @@
+# Increase history size. Allow 32³ entries; the default is 500.
+export HISTSIZE='32768';
+export HISTFILESIZE="${HISTSIZE}";
+# Omit duplicates and commands that begin with a space from history.
+export HISTCONTROL='ignoreboth';
+if [ -n "$HISTDIR" ]; then
+  if [ -n "$ZSH_VERSION" ]; then
+    shell_name="zsh"
+  elif [ -n "$BASH_VERSION" ]; then
+    shell_name="bash"
+  elif [ -n "$KSH_VERSION" ]; then
+    shell_name="ksh"
+  else
+    shell_name=$(basename $(ps -p $$ -o comm=) 2>/dev/null || basename "$SHELL")
+  fi
+  case $shell_name in
+      *bash) export HISTFILE="$HISTDIR/.bash_history" ;;
+      *zsh)  export HISTFILE="$HISTDIR/.zsh_history" ;;
+      *ksh)  export HISTFILE="$HISTDIR/.sh_history" ;;
+      *sh)   export HISTFILE="$HISTDIR/.history" ;;
+      *)     export HISTFILE="$HISTDIR/.${shell_name}_history" ;;
+  esac
+fi
+
+# Prefer US English and use UTF-8.
+export LANG='en_US.UTF-8';
+export LC_ALL='en_US.UTF-8';
+
+# Highlight section titles in manual pages.
+export LESS_TERMCAP_md="${yellow}";
+
+# Don’t clear the screen after quitting a manual page.
+export MANPAGER='less -X';
+
+# Preferred editor for local and remote sessions
+if [ -n "$SSH_CONNECTION" ]; then
+  export EDITOR='nano'
+else
+  export EDITOR='nano'
+fi
+
+# for wget
+http_proxy=$HTTP_PROXY
+https_proxy=$HTTPS_PROXY
+
+# Python
+
+# Enable persistent history for `python`.
+export PYTHON_HISTORY="${HISTDIR:-$HOME}/.python_history";
+# Make Python use UTF-8 encoding for output to stdin, stdout, and stderr.
+export PYTHONIOENCODING='UTF-8';
+
+# Node
+
+# Enable persistent REPL history for `node`.
+export NODE_REPL_HISTORY="${HISTDIR:-$HOME}/.node_history";
+# Allow 32³ entries; the default is 1000.
+export NODE_REPL_HISTORY_SIZE='32768';
+# Use sloppy mode by default, matching web browsers.
+export NODE_REPL_MODE='sloppy';
+# Set NPM prefix
+export NPM_PREFIX="$HOME/.npm-global"
+# Set N home
+export N_PREFIX="$HOME/.n"
+
+# macos
+if [ $(uname -s) = 'Darwin' ]; then
+  # Avoid issues with `gpg` as installed via Homebrew.
+  # https://stackoverflow.com/a/42265848/96656
+  export GPG_TTY=$(tty);
+  # Hide the “default interactive shell is now zsh” warning on macOS.
+  export BASH_SILENCE_DEPRECATION_WARNING=1;
+  # Set Casks to install into ~/Applications
+  export HOMEBREW_CASK_OPTS="--appdir=$HOME/Applications"
+
+  # Chrome
+  export CHROME_EXECUTABLE="$HOME/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+fi
+
+# Android SDK
+export ANDROID_HOME="$HOME/dev/tools/android-sdk"
+export ANDROID_SDK_ROOT="$HOME/dev/tools/android-sdk"
+export ANDROID_AVD_HOME="$HOME/.android/avd"
+

@@ -1,0 +1,5 @@
+[includeIf "gitdir:~/dev/space/example1org/**/"]
+	path = ~/.config/git/gitconfig.example1org
+
+[includeIf "gitdir:~/dev/space/example2org/**/"]
+	path = ~/.config/git/gitconfig.example2org

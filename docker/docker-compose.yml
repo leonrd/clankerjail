@@ -60,6 +60,7 @@ services:
       - "${CLANKERJAIL_CLANKER_USER_HOME_DIR:-${CLANKERJAIL_CONFIG_DIR:-${HOME}/.config/clankerjail}/home/${CLANKER_USER:-clanker}}:/home/${CLANKER_USER:-clanker}"
     networks:
       - proxy-internal
+      - external
     logging: *default-logging
     security_opt:
       - no-new-privileges=true
@@ -75,5 +76,8 @@ networks:
     driver: bridge
     internal: true
   proxy-external:
+    driver: bridge
+    internal: false
+  external:
     driver: bridge
     internal: false

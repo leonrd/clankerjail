@@ -1,0 +1,79 @@
+name: clankerjail
+
+x-logging: &default-logging
+  options:
+    max-size: '100m'
+    max-file: '5'
+    tag: '{{.ImageName}}|{{.Name}}'
+  driver: json-file
+
+services:
+  proxy:
+    image: openresty/openresty:1.27.1.2-11-alpine-slim
+    environment:
+      ANTHROPIC_BASE_URL: ${ANTHROPIC_BASE_URL:-api.anthropic.com}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-""}
+      ANTHROPIC_AUTH_TOKEN: ${ANTHROPIC_AUTH_TOKEN:-""}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-"https://api.openai.com/v1"}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-""}
+      OPENROUTER_BASE_URL: ${OPENROUTER_BASE_URL:-"https://openrouter.ai/api/v1"}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-""}
+    volumes:
+      - ../proxy/etc/nginx/conf.d/:/etc/nginx/conf.d/:ro
+    networks:
+      - proxy-internal
+      - proxy-external
+    # ports:
+    # # don't expose to host, but if you must, listen on localhost only
+    #   - "127.0.0.1:10001:10001" 
+    #   - "127.0.0.1:10002:10002"
+    #   - "127.0.0.1:10002:10003"
+    restart: always
+    logging: *default-logging
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    security_opt:
+      - no-new-privileges=true
+
+  runner:
+    image: clankerjail
+    build: 
+      context: ../
+      dockerfile: docker/Dockerfile
+    depends_on:
+      - proxy
+    environment:
+      - TZ=${TZ:-UTC}
+      - ANTHROPIC_BASE_URL=http://proxy:10001/anthropic-api
+      - ANTHROPIC_API_KEY="" # Important: Must be explicitly empty
+      - ANTHROPIC_AUTH_TOKEN="sk-proxy"
+      - OPENAI_BASE_URL=http://proxy:10002/openai-api
+      - OPENAI_API_KEY="sk-proxy"
+      - OPENROUTER_BASE_URL=http://proxy:10003/openrouter-api
+      - OPENROUTER_API_KEY="sk-proxy"
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=1073741824   # 1 G
+    volumes:
+      - "${CLANKERJAIL_CLANKER_USER_HOME_DIR:-${CLANKERJAIL_CONFIG_DIR:-${HOME}/.config/clankerjail}/home/${CLANKER_USER:-clanker}}:/home/${CLANKER_USER:-clanker}"
+    networks:
+      - proxy-internal
+    logging: *default-logging
+    security_opt:
+      - no-new-privileges=true
+    mem_limit: 32g
+    cpus: "4"
+    pids_limit: 256
+    stdin_open: true
+    tty: true
+    command: /usr/bin/zsh
+
+networks:
+  proxy-internal:
+    driver: bridge
+    internal: true
+  proxy-external:
+    driver: bridge
+    internal: false

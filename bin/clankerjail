@@ -1,0 +1,81 @@
+#!/bin/sh
+
+__dir="$(cd "$(dirname "$0")" && pwd)"
+CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
+
+for arg in "$@"; do
+  case "${arg}" in
+    --skip-image-build)
+      SKIP_IMAGE_BUILD=1
+      ;;
+    --dry-run)
+      DRY_RUN=1
+      ;;
+    --config)
+      CONFIG=1
+      ;;
+    *)
+      WORKSPACE="${arg}"
+      ;;
+  esac
+done
+
+if [ "${SKIP_IMAGE_BUILD}" != 1 ]; then
+  echo "Building image to current run config" && \
+    CLANKER_USER=${CLANKER_USER} \
+    CLANKER_UID=${CLANKER_UID} \
+    CLANKER_GID=${CLANKER_GID} \
+    GIT_DELTA_VERSION=${GIT_DELTA_VERSION} \
+    ${__dir}/clankerjail-build
+fi
+
+. "${CLANKERJAIL_DIR}/helpers/get_tz.sh"
+
+CLANKER_USER=${CLANKER_USER:-clanker}
+CLANKERJAIL_CONFIG_DIR=${CLANKERJAIL_CONFIG_DIR:-"$HOME/.config/clankerjail"}
+CLANKERJAIL_CLANKER_USER_HOME_DIR=${CLANKERJAIL_CLANKER_USER_HOME_DIR:-"${CLANKERJAIL_CONFIG_DIR}/home/${CLANKER_USER}"}
+
+WORKSPACE="${WORKSPACE:-.}"
+# Adjust workspace for relative path support
+case "${WORKSPACE}" in
+  .) ;;
+  /*) ;;
+  ./*) ;;
+  ../*) ;;
+  *) WORKSPACE="./${WORKSPACE}" ;;
+esac
+
+# Prepare dirs
+if [ "${DRY_RUN}" != 1 ]; then
+  mkdir -p "${CLANKERJAIL_CONFIG_DIR}"
+  mkdir -p "${CLANKERJAIL_CLANKER_USER_HOME_DIR}"
+fi
+
+run_compose() {
+  CLANKERJAIL_CONFIG_DIR=${CLANKERJAIL_CONFIG_DIR} \
+  CLANKERJAIL_CLANKER_USER_HOME_DIR=${CLANKERJAIL_CLANKER_USER_HOME_DIR} \
+  TZ=$(get_tz) \
+  CLANKER_USER=${CLANKER_USER} \
+  ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL} \
+  ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY} \
+  ANTHROPIC_AUTH_TOKEN=${ANTHROPIC_AUTH_TOKEN} \
+  OPENAI_BASE_URL=${OPENAI_BASE_URL} \
+  OPENAI_API_KEY=${OPENAI_API_KEY} \
+  OPENROUTER_BASE_URL=${OPENROUTER_BASE_URL} \
+  OPENROUTER_API_KEY=${OPENROUTER_API_KEY} \
+  docker compose \
+    $( [ "${DRY_RUN}" = 1 ] && echo "--dry-run" ) \
+    -f "${CLANKERJAIL_DIR}/docker/docker-compose.yml" \
+    "$@"
+}
+
+if [ "${CONFIG}" = 1 ]; then
+  run_compose config
+fi
+
+echo "Running image with current run config"
+run_compose run \
+  --volume "${WORKSPACE}:/workspace" \
+  --rm \
+  runner
+

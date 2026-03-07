@@ -1,0 +1,16 @@
+#!/bin/sh
+
+__dir="$(cd "$(dirname "$0")" && pwd)"
+CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
+
+CLANKER_USER=${CLANKER_USER:-clanker}
+CLANKER_UID=${CLANKER_UID:-$(id -u 2>/dev/null || echo 1000)}
+CLANKER_GID=${CLANKER_GID:-$(id -g 2>/dev/null || echo 1000)}
+
+docker compose \
+  -f "${CLANKERJAIL_DIR}/docker/docker-compose.yml" \
+  build \
+    --build-arg CLANKER_USER=${CLANKER_USER} \
+    --build-arg CLANKER_UID=${CLANKER_UID} \
+    --build-arg CLANKER_GID=${CLANKER_GID} \
+    --build-arg GIT_DELTA_VERSION=${GIT_DELTA_VERSION:-"0.18.2"}

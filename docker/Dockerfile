@@ -18,13 +18,21 @@ RUN apt-get update \
 
 # Install basic tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    man-db less sed curl wget git vim nano make bash tmux unzip gnupg gnupg2 ca-certificates \
+    man-db less sed curl wget git vim nano make bash tmux unzip gnupg gnupg2 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install awesome tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     zsh fzf jq ripgrep bat git-flow htop dfc sqlite3 imagemagick ffmpeg sox \
     rename rlwrap screen tree watchman \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install some dependencies
+# ca-certificates: necessary for git-delta and others
+# build-essential, libz-dev, libyaml-dev: necessary for building ruby using rbenv
+RUN apt-get update &&  apt-get install -y --no-install-recommends \
+    ca-certificates \
+	build-essential libz-dev libyaml-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install extra tools

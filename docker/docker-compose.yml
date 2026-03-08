@@ -30,11 +30,6 @@ services:
     #   - "127.0.0.1:10002:10003"
     restart: always
     logging: *default-logging
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
     security_opt:
       - no-new-privileges=true
 

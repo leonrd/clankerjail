@@ -55,7 +55,7 @@ services:
       - OPENROUTER_BASE_URL=http://proxy:10003/openrouter-api
       - OPENROUTER_API_KEY="sk-proxy"
     tmpfs:
-      - /tmp:rw,mode=1777,uid=${CLANKER_UID:-1000},gid=${CLANKER_GID:-1000},exec,nodev,nosuid,size=1073741824 # 1 G
+      - /tmp:rw,mode=1777,uid=${CLANKER_UID:-1000},gid=${CLANKER_GID:-1000},exec,nodev,nosuid,size=5368709120 # 5 G
     volumes:
       - "${CLANKERJAIL_CLANKER_USER_HOME_DIR:-${CLANKERJAIL_CONFIG_DIR:-${HOME}/.config/clankerjail}/home/${CLANKER_USER:-clanker}}:/home/${CLANKER_USER:-clanker}"
     networks:

@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 get_tz() {
     # If TZ is already set, return it
-    if [ -n "$TZ" ]; then
-        echo "$TZ"
+    if [ -n "${TZ}" ]; then
+        echo "${TZ}"
         return
     fi
 

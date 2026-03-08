@@ -60,11 +60,11 @@ RUN UBUNTU_GID=$(id -g ubuntu) && \
 
 ARG CLANKER_USER=clanker
 
-RUN groupadd --gid $CLANKER_GID $CLANKER_USER \
-    && useradd --uid $CLANKER_UID --gid $CLANKER_GID --shell /usr/bin/zsh --create-home $CLANKER_USER
+RUN groupadd --gid "${CLANKER_GID}" "${CLANKER_USER}" \
+    && useradd --uid "${CLANKER_UID}" --gid "${CLANKER_GID}" --shell /usr/bin/zsh --create-home "${CLANKER_USER}"
 
 # Switch to non-root, non-sudoer clanker user
-USER $CLANKER_USER
+USER "${CLANKER_USER}"
 
 # Switch to workspace
 WORKDIR /workspace

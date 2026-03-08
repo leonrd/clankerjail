@@ -9,6 +9,7 @@ CLANKER_USER=${CLANKER_USER:-clanker}
 SKIP_IMAGE_BUILD=0
 DRY_RUN=0
 CONFIG=0
+INSTALL_DOTFILES=0
 
 for arg in "$@"; do
   case "${arg}" in
@@ -20,6 +21,9 @@ for arg in "$@"; do
       ;;
     --config)
       CONFIG=1
+      ;;
+    --install-dotfiles)
+      INSTALL_DOTFILES=1
       ;;
     *)
       WORKSPACE="${arg}"
@@ -79,6 +83,13 @@ run_compose() {
 
 if [ "${CONFIG}" = 1 ]; then
   run_compose config
+fi
+
+if [ "${INSTALL_DOTFILES}" = 1 ] && [ "${DRY_RUN}" != 1 ]; then
+  curl -fsSL "${DOTFILES_INSTALL_URL:-https://raw.githubusercontent.com/leonrd/dotfiles/refs/heads/main/.config/dotfiles/bin/install.sh}" \
+  | DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/leonrd/dotfiles.git}" \
+    DOTFILES_HOME_DIR="${CLANKERJAIL_CLANKER_USER_HOME_DIR}" \
+    sh
 fi
 
 echo "Running image with current run config"

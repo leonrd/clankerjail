@@ -86,4 +86,3 @@ run_compose run \
   --volume "${WORKSPACE}:/workspace" \
   --rm \
   runner
-

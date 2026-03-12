@@ -86,7 +86,7 @@ if [ "${CONFIG}" = 1 ]; then
 fi
 
 if [ "${INSTALL_DOTFILES}" = 1 ] && [ "${DRY_RUN}" != 1 ]; then
-  curl -fsSL "${DOTFILES_INSTALL_URL:-https://raw.githubusercontent.com/leonrd/dotfiles/refs/heads/main/.config/dotfiles/bin/install.sh}" \
+  curl -fsSL "${DOTFILES_INSTALL_URL:-https://raw.githubusercontent.com/leonrd/dotfiles/HEAD/.local/share/dotfiles/dotfiles-install.sh}" \
   | DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/leonrd/dotfiles.git}" \
     DOTFILES_HOME_DIR="${CLANKERJAIL_CLANKER_USER_HOME_DIR}" \
     sh

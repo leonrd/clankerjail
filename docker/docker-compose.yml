@@ -64,7 +64,7 @@ services:
     pids_limit: 256
     stdin_open: true
     tty: true
-    command: /usr/bin/zsh
+    command: zsh -l
 
 networks:
   proxy-internal:

@@ -77,4 +77,4 @@ USER "${CLANKER_USER}"
 # Switch to workspace
 WORKDIR /workspace
 
-CMD ["/usr/bin/zsh"]
+CMD ["zsh", "-l"]

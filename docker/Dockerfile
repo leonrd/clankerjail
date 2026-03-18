@@ -18,7 +18,7 @@ RUN apt-get update \
 
 # Install basic tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    man-db less sed curl wget git vim nano make bash tmux unzip gnupg gnupg2 \
+    man-db less sed curl wget git vim nano make bash tmux dtach unzip gnupg gnupg2 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install awesome tools

@@ -20,6 +20,8 @@ services:
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-""}
     volumes:
       - ../proxy/etc/nginx/conf.d/:/etc/nginx/conf.d/:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks:
       - proxy-internal
       - proxy-external
@@ -42,6 +44,7 @@ services:
       - proxy
     environment:
       - TZ=${TZ:-UTC}
+      - LLAMA_CPP_BASE_URL=http://proxy:10000/llama-cpp
       - ANTHROPIC_BASE_URL=http://proxy:10001/anthropic-api
       - ANTHROPIC_API_KEY="" # Important: Must be explicitly empty
       - ANTHROPIC_AUTH_TOKEN="sk-proxy"

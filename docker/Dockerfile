@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install git-delta
-ARG GIT_DELTA_VERSION=0.18.2
+ARG GIT_DELTA_VERSION=0.19.2
 RUN ARCH=$(dpkg --print-architecture) \
     && wget -q -O /tmp/git-delta.deb \
         "https://github.com/dandavison/delta/releases/download/${GIT_DELTA_VERSION}/git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" \

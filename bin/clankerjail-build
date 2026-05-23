@@ -12,6 +12,9 @@ CLANKER_GID="${CLANKER_GID:-$(id -g 2>/dev/null || echo 1000)}"
 for arg in "$@"; do
 	extra_args=()
   case "${arg}" in
+    --dry-run)
+      extra_args+=("$1")
+      ;;
     --no-cache)
       extra_args+=("$1")
       ;;

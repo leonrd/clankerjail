@@ -5,19 +5,17 @@ set -eo pipefail
 __dir="$(cd "$(dirname "$0")" && pwd)"
 CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
 
-CLANKER_USER=${CLANKER_USER:-clanker}
-SKIP_IMAGE_BUILD=0
-DRY_RUN=0
-PRINT_CONFIG=0
-INSTALL_DOTFILES=0
+CLANKER_USER="${CLANKER_USER:-clanker}"
+CLANKER_UID="${CLANKER_UID:-$(id -u 2>/dev/null || echo 1000)}"
+CLANKER_GID="${CLANKER_GID:-$(id -g 2>/dev/null || echo 1000)}"
 
 for arg in "$@"; do
   case "${arg}" in
-    --skip-image-build)
-      SKIP_IMAGE_BUILD=1
-      ;;
     --dry-run)
       DRY_RUN=1
+      ;;
+    --skip-image-build)
+      SKIP_IMAGE_BUILD=1
       ;;
     --print-config)
       PRINT_CONFIG=1
@@ -32,11 +30,11 @@ for arg in "$@"; do
 done
 
 if [ "${SKIP_IMAGE_BUILD}" != 1 ]; then
-  echo "Building image to current run config" && \
-    CLANKER_USER="${CLANKER_USER}" \
-    CLANKER_UID="${CLANKER_UID}" \
-    CLANKER_GID="${CLANKER_GID}" \
-    ${__dir}/clankerjail-build
+  CLANKER_USER="${CLANKER_USER}" \
+  CLANKER_UID="${CLANKER_UID}" \
+  CLANKER_GID="${CLANKER_GID}" \
+    ${__dir}/clankerjail-build \
+    $( [ "${DRY_RUN}" = 1 ] && echo "--dry-run" )
 fi
 
 . "${CLANKERJAIL_DIR}/helpers/get_tz.sh"
@@ -91,7 +89,6 @@ if [ "${INSTALL_DOTFILES}" = 1 ] && [ "${DRY_RUN}" != 1 ]; then
     sh
 fi
 
-echo "Running image with current run config"
 run_compose run \
   --volume "${WORKSPACE}:/workspace" \
   --rm \

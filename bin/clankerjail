@@ -36,7 +36,6 @@ if [ "${SKIP_IMAGE_BUILD}" != 1 ]; then
     CLANKER_USER="${CLANKER_USER}" \
     CLANKER_UID="${CLANKER_UID}" \
     CLANKER_GID="${CLANKER_GID}" \
-    GIT_DELTA_VERSION="${GIT_DELTA_VERSION}" \
     ${__dir}/clankerjail-build
 fi
 

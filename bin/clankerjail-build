@@ -9,10 +9,22 @@ CLANKER_USER="${CLANKER_USER:-clanker}"
 CLANKER_UID="${CLANKER_UID:-$(id -u 2>/dev/null || echo 1000)}"
 CLANKER_GID="${CLANKER_GID:-$(id -g 2>/dev/null || echo 1000)}"
 
+for arg in "$@"; do
+	extra_args=()
+  case "${arg}" in
+    --no-cache)
+      extra_args+=("$1")
+      ;;
+    *)
+      ;;
+  esac
+done
+
 docker compose \
   -f "${CLANKERJAIL_DIR}/docker/docker-compose.yml" \
   build \
     --build-arg CLANKER_USER="${CLANKER_USER}" \
     --build-arg CLANKER_UID="${CLANKER_UID}" \
     --build-arg CLANKER_GID="${CLANKER_GID}" \
-    --build-arg GIT_DELTA_VERSION="${GIT_DELTA_VERSION:-0.19.2}"
+    --build-arg GIT_DELTA_VERSION="${GIT_DELTA_VERSION:-0.19.2}" \
+    "${extra_args[@]}"

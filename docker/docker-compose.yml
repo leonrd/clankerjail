@@ -55,7 +55,7 @@ services:
     tmpfs:
       - /tmp:rw,mode=1777,uid=${AGENT_UID:-1000},gid=${AGENT_GID:-1000},exec,nodev,nosuid,size=5368709120 # 5 G
     volumes:
-      - "${CLANKERJAIL_AGENT_USER_HOME_DIR:-${CLANKERJAIL_CONFIG_DIR:-${HOME}/.config/clankerjail}/home/agent}:/home/agent"
+      - "${CLANKERJAIL_AGENT_USER_HOME_DIR:-${CLANKERJAIL_STATE_DIR:-${HOME}/.local/state/clankerjail}/home/agent}:/home/agent"
     networks:
       - proxy-internal
       - external

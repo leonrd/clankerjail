@@ -5,7 +5,6 @@ set -euo pipefail
 __dir="$(cd "$(dirname "$0")" && pwd)"
 CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
 
-AGENT_USER="${AGENT_USER:-agent}"
 AGENT_UID="${AGENT_UID:-$(id -u 2>/dev/null || echo 1000)}"
 AGENT_GID="${AGENT_GID:-$(id -g 2>/dev/null || echo 1000)}"
 
@@ -26,7 +25,6 @@ done
 docker compose \
   -f "${CLANKERJAIL_DIR}/docker/docker-compose.yml" \
   build \
-    --build-arg AGENT_USER="${AGENT_USER}" \
     --build-arg AGENT_UID="${AGENT_UID}" \
     --build-arg AGENT_GID="${AGENT_GID}" \
     "${extra_args[@]}"

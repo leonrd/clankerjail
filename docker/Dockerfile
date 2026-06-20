@@ -73,13 +73,11 @@ RUN UBUNTU_GID=$(id -g ubuntu) && \
 
 # Add non-root, non-sudoer agent user
 
-ARG AGENT_USER=agent
-
-RUN groupadd --gid "${AGENT_GID}" "${AGENT_USER}" \
-    && useradd --uid "${AGENT_UID}" --gid "${AGENT_GID}" --shell /usr/bin/zsh --create-home "${AGENT_USER}"
+RUN groupadd --gid "${AGENT_GID}" agent \
+    && useradd --uid "${AGENT_UID}" --gid "${AGENT_GID}" --shell /usr/bin/zsh --create-home agent
 
 # Switch to non-root, non-sudoer agent user
-USER "${AGENT_USER}"
+USER agent
 
 # Switch to workspace
 WORKDIR /workspace

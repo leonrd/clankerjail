@@ -5,7 +5,6 @@ set -eo pipefail
 __dir="$(cd "$(dirname "$0")" && pwd)"
 CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
 
-AGENT_USER="${AGENT_USER:-agent}"
 AGENT_UID="${AGENT_UID:-$(id -u 2>/dev/null || echo 1000)}"
 AGENT_GID="${AGENT_GID:-$(id -g 2>/dev/null || echo 1000)}"
 
@@ -30,7 +29,6 @@ for arg in "$@"; do
 done
 
 if [ "${SKIP_IMAGE_BUILD}" != 1 ]; then
-  AGENT_USER="${AGENT_USER}" \
   AGENT_UID="${AGENT_UID}" \
   AGENT_GID="${AGENT_GID}" \
     ${__dir}/clankerjail-build \
@@ -40,7 +38,7 @@ fi
 . "${CLANKERJAIL_DIR}/helpers/get_tz.sh"
 
 CLANKERJAIL_CONFIG_DIR=${CLANKERJAIL_CONFIG_DIR:-"${HOME}/.config/clankerjail"}
-CLANKERJAIL_AGENT_USER_HOME_DIR=${CLANKERJAIL_AGENT_USER_HOME_DIR:-"${CLANKERJAIL_CONFIG_DIR}/home/${AGENT_USER}"}
+CLANKERJAIL_AGENT_USER_HOME_DIR=${CLANKERJAIL_AGENT_USER_HOME_DIR:-"${CLANKERJAIL_CONFIG_DIR}/home/agent"}
 
 WORKSPACE="${WORKSPACE:-.}"
 # Adjust workspace for relative path support
@@ -62,7 +60,6 @@ run_compose() {
   CLANKERJAIL_CONFIG_DIR="${CLANKERJAIL_CONFIG_DIR}" \
   CLANKERJAIL_AGENT_USER_HOME_DIR="${CLANKERJAIL_AGENT_USER_HOME_DIR}" \
   TZ=$(get_tz) \
-  AGENT_USER="${AGENT_USER}" \
   AGENT_UID="${AGENT_UID}" \
   AGENT_GID="${AGENT_GID}" \
   ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL}" \

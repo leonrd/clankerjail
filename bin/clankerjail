@@ -5,9 +5,9 @@ set -eo pipefail
 __dir="$(cd "$(dirname "$0")" && pwd)"
 CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
 
-CLANKER_USER="${CLANKER_USER:-clanker}"
-CLANKER_UID="${CLANKER_UID:-$(id -u 2>/dev/null || echo 1000)}"
-CLANKER_GID="${CLANKER_GID:-$(id -g 2>/dev/null || echo 1000)}"
+AGENT_USER="${AGENT_USER:-agent}"
+AGENT_UID="${AGENT_UID:-$(id -u 2>/dev/null || echo 1000)}"
+AGENT_GID="${AGENT_GID:-$(id -g 2>/dev/null || echo 1000)}"
 
 for arg in "$@"; do
   case "${arg}" in
@@ -30,9 +30,9 @@ for arg in "$@"; do
 done
 
 if [ "${SKIP_IMAGE_BUILD}" != 1 ]; then
-  CLANKER_USER="${CLANKER_USER}" \
-  CLANKER_UID="${CLANKER_UID}" \
-  CLANKER_GID="${CLANKER_GID}" \
+  AGENT_USER="${AGENT_USER}" \
+  AGENT_UID="${AGENT_UID}" \
+  AGENT_GID="${AGENT_GID}" \
     ${__dir}/clankerjail-build \
     $( [ "${DRY_RUN}" = 1 ] && echo "--dry-run" )
 fi
@@ -40,7 +40,7 @@ fi
 . "${CLANKERJAIL_DIR}/helpers/get_tz.sh"
 
 CLANKERJAIL_CONFIG_DIR=${CLANKERJAIL_CONFIG_DIR:-"${HOME}/.config/clankerjail"}
-CLANKERJAIL_CLANKER_USER_HOME_DIR=${CLANKERJAIL_CLANKER_USER_HOME_DIR:-"${CLANKERJAIL_CONFIG_DIR}/home/${CLANKER_USER}"}
+CLANKERJAIL_AGENT_USER_HOME_DIR=${CLANKERJAIL_AGENT_USER_HOME_DIR:-"${CLANKERJAIL_CONFIG_DIR}/home/${AGENT_USER}"}
 
 WORKSPACE="${WORKSPACE:-.}"
 # Adjust workspace for relative path support
@@ -55,16 +55,16 @@ esac
 # Prepare dirs
 if [ "${DRY_RUN}" != 1 ]; then
   mkdir -p "${CLANKERJAIL_CONFIG_DIR}"
-  mkdir -p "${CLANKERJAIL_CLANKER_USER_HOME_DIR}"
+  mkdir -p "${CLANKERJAIL_AGENT_USER_HOME_DIR}"
 fi
 
 run_compose() {
   CLANKERJAIL_CONFIG_DIR="${CLANKERJAIL_CONFIG_DIR}" \
-  CLANKERJAIL_CLANKER_USER_HOME_DIR="${CLANKERJAIL_CLANKER_USER_HOME_DIR}" \
+  CLANKERJAIL_AGENT_USER_HOME_DIR="${CLANKERJAIL_AGENT_USER_HOME_DIR}" \
   TZ=$(get_tz) \
-  CLANKER_USER="${CLANKER_USER}" \
-  CLANKER_UID="${CLANKER_UID}" \
-  CLANKER_GID="${CLANKER_GID}" \
+  AGENT_USER="${AGENT_USER}" \
+  AGENT_UID="${AGENT_UID}" \
+  AGENT_GID="${AGENT_GID}" \
   ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL}" \
   ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY}" \
   ANTHROPIC_AUTH_TOKEN="${ANTHROPIC_AUTH_TOKEN}" \
@@ -85,7 +85,7 @@ fi
 if [ "${INSTALL_DOTFILES}" = 1 ] && [ "${DRY_RUN}" != 1 ]; then
   curl -fsSL "${DOTFILES_INSTALL_URL:-https://raw.githubusercontent.com/leonrd/dotfiles/HEAD/.local/share/dotfiles/dotfiles-install.sh}" \
   | DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/leonrd/dotfiles.git}" \
-    DOTFILES_HOME_DIR="${CLANKERJAIL_CLANKER_USER_HOME_DIR}" \
+    DOTFILES_HOME_DIR="${CLANKERJAIL_AGENT_USER_HOME_DIR}" \
     sh
 fi
 

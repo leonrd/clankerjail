@@ -56,30 +56,30 @@ RUN ARCH=$(dpkg --print-architecture) \
 	&& apt-get install -y --no-install-recommends google-chrome-stable \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG CLANKER_UID=1000
-ARG CLANKER_GID=1000
+ARG AGENT_UID=1000
+ARG AGENT_GID=1000
 
-# Change default ubuntu user's UID so it doesn't collide with the requested UID for the clanker user
+# Change default ubuntu user's UID so it doesn't collide with the requested UID for the agent user
 RUN UBUNTU_UID=$(id -u ubuntu) && \
-    if [ "${CLANKER_UID}" = "${UBUNTU_UID}" ]; then \
+    if [ "${AGENT_UID}" = "${UBUNTU_UID}" ]; then \
         usermod -u $((UBUNTU_UID + 1)) ubuntu; \
     fi
 
-# Change default ubuntu user's GID so it doesn't collide with the requested GID for the clanker user
+# Change default ubuntu user's GID so it doesn't collide with the requested GID for the agent user
 RUN UBUNTU_GID=$(id -g ubuntu) && \
-    if [ "${CLANKER_GID}" = "${UBUNTU_GID}" ]; then \
+    if [ "${AGENT_GID}" = "${UBUNTU_GID}" ]; then \
         groupmod -g $((UBUNTU_GID + 1)) ubuntu && usermod -g $((UBUNTU_GID + 1)) ubuntu; \
     fi
 
-# Add non-root, non-sudoer clanker user
+# Add non-root, non-sudoer agent user
 
-ARG CLANKER_USER=clanker
+ARG AGENT_USER=agent
 
-RUN groupadd --gid "${CLANKER_GID}" "${CLANKER_USER}" \
-    && useradd --uid "${CLANKER_UID}" --gid "${CLANKER_GID}" --shell /usr/bin/zsh --create-home "${CLANKER_USER}"
+RUN groupadd --gid "${AGENT_GID}" "${AGENT_USER}" \
+    && useradd --uid "${AGENT_UID}" --gid "${AGENT_GID}" --shell /usr/bin/zsh --create-home "${AGENT_USER}"
 
-# Switch to non-root, non-sudoer clanker user
-USER "${CLANKER_USER}"
+# Switch to non-root, non-sudoer agent user
+USER "${AGENT_USER}"
 
 # Switch to workspace
 WORKDIR /workspace

@@ -5,8 +5,8 @@ set -euo pipefail
 __dir="$(cd "$(dirname "$0")" && pwd)"
 CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
 
-AGENT_UID="${AGENT_UID:-$(id -u 2>/dev/null || echo 1000)}"
-AGENT_GID="${AGENT_GID:-$(id -g 2>/dev/null || echo 1000)}"
+AGENT_UID=$(id -u 2>/dev/null || echo 1000)
+AGENT_GID=$(id -g 2>/dev/null || echo 1000)
 
 for arg in "$@"; do
 	extra_args=()

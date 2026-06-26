@@ -5,17 +5,22 @@ set -eo pipefail
 __dir="$(cd "$(dirname "$0")" && pwd)"
 CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
 
-for arg in "$@"; do
-	extra_args=()
-  case "${arg}" in
-    -w|--workspace)
-      WORKSPACE="${arg}"
-      ;;
-    *)
-      extra_args+=("${arg}")
-      ;;
-  esac
-done
+parse_flags() {
+  extra_args=()
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      -w|--workspace)
+        WORKSPACE="${arg}"
+        ;;
+      *)
+        extra_args+=("$1")
+        shift
+        ;;
+    esac
+  done
+}
+
+parse_flags "$@"
 
 . "${CLANKERJAIL_DIR}/helpers/get_tz.sh"
 

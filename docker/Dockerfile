@@ -9,6 +9,11 @@ ENV TZ=UTC
 # Switch to root user for system config and package install
 USER root
 
+# Upgrade existing packages
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
 # Install locale-gen and add en_US.UTF-8
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \

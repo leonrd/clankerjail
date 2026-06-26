@@ -10,14 +10,8 @@ AGENT_GID=$(id -g 2>/dev/null || echo 1000)
 
 for arg in "$@"; do
   case "${arg}" in
-    --dry-run)
-      DRY_RUN=1
-      ;;
     --skip-image-build)
       SKIP_IMAGE_BUILD=1
-      ;;
-    --print-config)
-      PRINT_CONFIG=1
       ;;
     --install-dotfiles)
       INSTALL_DOTFILES=1
@@ -31,8 +25,7 @@ done
 if [ "${SKIP_IMAGE_BUILD}" != 1 ]; then
   AGENT_UID="${AGENT_UID}" \
   AGENT_GID="${AGENT_GID}" \
-    ${__dir}/clankerjail-build \
-    $( [ "${DRY_RUN}" = 1 ] && echo "--dry-run" )
+    ${__dir}/clankerjail-build
 fi
 
 . "${CLANKERJAIL_DIR}/helpers/get_tz.sh"
@@ -51,42 +44,25 @@ case "${WORKSPACE}" in
 esac
 
 # Prepare dirs
-if [ "${DRY_RUN}" != 1 ]; then
-  mkdir -p "${CLANKERJAIL_STATE_DIR}"
-  mkdir -p "${CLANKERJAIL_AGENT_USER_HOME_DIR}"
-fi
+mkdir -p "${CLANKERJAIL_STATE_DIR}"
+mkdir -p "${CLANKERJAIL_AGENT_USER_HOME_DIR}"
 
-run_compose() {
-  CLANKERJAIL_STATE_DIR="${CLANKERJAIL_STATE_DIR}" \
-  CLANKERJAIL_AGENT_USER_HOME_DIR="${CLANKERJAIL_AGENT_USER_HOME_DIR}" \
-  TZ=$(get_tz) \
-  AGENT_UID="${AGENT_UID}" \
-  AGENT_GID="${AGENT_GID}" \
-  ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL}" \
-  ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY}" \
-  ANTHROPIC_AUTH_TOKEN="${ANTHROPIC_AUTH_TOKEN}" \
-  OPENAI_BASE_URL="${OPENAI_BASE_URL}" \
-  OPENAI_API_KEY="${OPENAI_API_KEY}" \
-  OPENROUTER_BASE_URL="${OPENROUTER_BASE_URL}" \
-  OPENROUTER_API_KEY="${OPENROUTER_API_KEY}" \
-  docker compose \
-    $( [ "${DRY_RUN}" = 1 ] && echo "--dry-run" ) \
-    -f "${CLANKERJAIL_DIR}/docker/docker-compose.yml" \
-    "$@"
-}
-
-if [ "${PRINT_CONFIG}" = 1 ]; then
-  run_compose config
-fi
-
-if [ "${INSTALL_DOTFILES}" = 1 ] && [ "${DRY_RUN}" != 1 ]; then
+if [ "${INSTALL_DOTFILES}" = 1 ]; then
   curl -fsSL "${DOTFILES_INSTALL_URL:-https://raw.githubusercontent.com/leonrd/dotfiles/HEAD/.local/share/dotfiles/dotfiles-install.sh}" \
   | DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/leonrd/dotfiles.git}" \
     DOTFILES_HOME_DIR="${CLANKERJAIL_AGENT_USER_HOME_DIR}" \
     sh
 fi
 
-run_compose run \
-  --volume "${WORKSPACE}:/workspace" \
-  --rm \
-  runner
+msb run clankerjail \
+  --env TZ=$(get_tz) \
+  --env ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL}" \
+  $( [ -n "${ANTHROPIC_API_KEY}" ] && echo "--secret ANTHROPIC_API_KEY@api.anthropic.com" ) \
+  --env OPENAI_BASE_URL="${OPENAI_BASE_URL}" \
+  $( [ -n "${OPENAI_API_KEY}" ] && echo "--secret OPENAI_API_KEY@api.openai.com" ) \
+  --env OPENROUTER_BASE_URL="${OPENROUTER_BASE_URL}" \
+  $( [ -n "${OPENROUTER_API_KEY}" ] && echo "--secret OPENROUTER_API_KEY@openrouter.ai" ) \
+  --tmpfs /tmp:4G:nodev,nosuid \
+  --mount-dir "${CLANKERJAIL_AGENT_USER_HOME_DIR:-${CLANKERJAIL_STATE_DIR:-${HOME}/.local/state/clankerjail}/home/agent}:/home/agent" \
+  $( [ -n "${WORKSPACE}" ] && echo "--mount-dir ${WORKSPACE}:/workspace" ) \
+

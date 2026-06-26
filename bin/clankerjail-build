@@ -11,9 +11,6 @@ AGENT_GID=$(id -g 2>/dev/null || echo 1000)
 for arg in "$@"; do
 	extra_args=()
   case "${arg}" in
-    --dry-run)
-      extra_args+=("${arg}")
-      ;;
     --no-cache)
       extra_args+=("${arg}")
       ;;
@@ -22,9 +19,10 @@ for arg in "$@"; do
   esac
 done
 
-docker compose \
-  -f "${CLANKERJAIL_DIR}/docker/docker-compose.yml" \
-  build \
+ docker build -t clankerjail:latest \
     --build-arg AGENT_UID="${AGENT_UID}" \
     --build-arg AGENT_GID="${AGENT_GID}" \
-    "${extra_args[@]}"
+    "${extra_args[@]}" \
+    "${CLANKERJAIL_DIR}/docker/" \
+    && docker save clankerjail:latest | msb load
+

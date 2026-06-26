@@ -5,28 +5,17 @@ set -eo pipefail
 __dir="$(cd "$(dirname "$0")" && pwd)"
 CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
 
-AGENT_UID=$(id -u 2>/dev/null || echo 1000)
-AGENT_GID=$(id -g 2>/dev/null || echo 1000)
-
 for arg in "$@"; do
+	extra_args=()
   case "${arg}" in
-    --skip-image-build)
-      SKIP_IMAGE_BUILD=1
-      ;;
-    --install-dotfiles)
-      INSTALL_DOTFILES=1
+    -w|--workspace)
+      WORKSPACE="${arg}"
       ;;
     *)
-      WORKSPACE="${arg}"
+      extra_args+=("${arg}")
       ;;
   esac
 done
-
-if [ "${SKIP_IMAGE_BUILD}" != 1 ]; then
-  AGENT_UID="${AGENT_UID}" \
-  AGENT_GID="${AGENT_GID}" \
-    ${__dir}/clankerjail-build
-fi
 
 . "${CLANKERJAIL_DIR}/helpers/get_tz.sh"
 
@@ -47,13 +36,6 @@ esac
 mkdir -p "${CLANKERJAIL_STATE_DIR}"
 mkdir -p "${CLANKERJAIL_AGENT_USER_HOME_DIR}"
 
-if [ "${INSTALL_DOTFILES}" = 1 ]; then
-  curl -fsSL "${DOTFILES_INSTALL_URL:-https://raw.githubusercontent.com/leonrd/dotfiles/HEAD/.local/share/dotfiles/dotfiles-install.sh}" \
-  | DOTFILES_REPO="${DOTFILES_REPO:-https://github.com/leonrd/dotfiles.git}" \
-    DOTFILES_HOME_DIR="${CLANKERJAIL_AGENT_USER_HOME_DIR}" \
-    sh
-fi
-
 msb run clankerjail \
   --env TZ=$(get_tz) \
   --env ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL}" \
@@ -65,4 +47,5 @@ msb run clankerjail \
   --tmpfs /tmp:4G:nodev,nosuid \
   --mount-dir "${CLANKERJAIL_AGENT_USER_HOME_DIR:-${CLANKERJAIL_STATE_DIR:-${HOME}/.local/state/clankerjail}/home/agent}:/home/agent" \
   $( [ -n "${WORKSPACE}" ] && echo "--mount-dir ${WORKSPACE}:/workspace" ) \
+  "${extra_args[@]}" \
 

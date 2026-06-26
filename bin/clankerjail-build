@@ -8,21 +8,10 @@ CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
 AGENT_UID=$(id -u 2>/dev/null || echo 1000)
 AGENT_GID=$(id -g 2>/dev/null || echo 1000)
 
-for arg in "$@"; do
-	extra_args=()
-  case "${arg}" in
-    --no-cache)
-      extra_args+=("${arg}")
-      ;;
-    *)
-      ;;
-  esac
-done
-
- docker build -t clankerjail:latest \
-    --build-arg AGENT_UID="${AGENT_UID}" \
-    --build-arg AGENT_GID="${AGENT_GID}" \
-    "${extra_args[@]}" \
-    "${CLANKERJAIL_DIR}/docker/" \
-    && docker save clankerjail:latest | msb load
+docker build -t clankerjail:latest \
+  --build-arg AGENT_UID="${AGENT_UID}" \
+  --build-arg AGENT_GID="${AGENT_GID}" \
+  "${CLANKERJAIL_DIR}/docker/" \
+  "$@" \
+  && docker save clankerjail:latest | msb load
 

@@ -52,5 +52,8 @@ msb run clankerjail \
   --tmpfs /tmp:4G:nodev,nosuid \
   --mount-dir "${CLANKERJAIL_AGENT_USER_HOME_DIR:-${CLANKERJAIL_STATE_DIR:-${HOME}/.local/state/clankerjail}/home/agent}:/home/agent" \
   $( [ -n "${WORKSPACE}" ] && echo "--mount-dir ${WORKSPACE}:/workspace" ) \
+  --net-default-egress deny \
+  --net-rule "allow@public:tcp:443" \
+  --net-rule "allow@host:udp:53" \
   "${extra_args[@]}" \
 

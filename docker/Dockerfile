@@ -55,11 +55,27 @@ RUN ARCH=$(dpkg --print-architecture) \
     && rm /tmp/git-delta.deb \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install Google Chrome
 RUN ARCH=$(dpkg --print-architecture) \
     && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | tee /etc/apt/trusted.gpg.d/google-chrome.gpg \
 	&& ARCH=$(dpkg --print-architecture) echo "deb [arch=${ARCH} signed-by=/etc/apt/trusted.gpg.d/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends google-chrome-stable \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install openssh-server
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssh-server \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /run/sshd && chmod 755 /run/sshd
+
+# Generate ssh host keys
+RUN ssh-keygen -A
+
+# Install net utils
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	iputils-ping traceroute telnet dnsutils iperf nmap \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ARG AGENT_UID=1000
@@ -81,5 +97,7 @@ USER agent
 
 # Switch to workspace
 WORKDIR /workspace
+
+EXPOSE 22/tcp
 
 CMD ["zsh", "-l"]

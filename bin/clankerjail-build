@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-__dir="$(cd "$(dirname "$0")" && pwd)"
+__dir=$(dirname "$(readlink -f "$0")")
 CLANKERJAIL_DIR="$(cd "${__dir}/.." && pwd)"
 
 AGENT_UID=$(id -u 2>/dev/null || echo 1000)

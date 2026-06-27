@@ -59,24 +59,18 @@ RUN ARCH=$(dpkg --print-architecture) \
 ARG AGENT_UID=1000
 ARG AGENT_GID=1000
 
-# Change default ubuntu user's UID so it doesn't collide with the requested UID for the agent user
-RUN UBUNTU_UID=$(id -u ubuntu) && \
-    if [ "${AGENT_UID}" = "${UBUNTU_UID}" ]; then \
-        usermod -u $((UBUNTU_UID + 1)) ubuntu; \
-    fi
+# rename ubuntu user to agent
+RUN usermod -l agent ubuntu
+RUN groupmod --new-name agent ubuntu
+# change agent UID/GID
+RUN groupmod -g "${AGENT_GID}" agent
+RUN usermod -u "${AGENT_UID}" agent
+RUN usermod -g "${AGENT_GID}" agent
+# change home path
+RUN usermod -d /home/agent -m agent
+# update the comment field of the user
+RUN usermod -c "agent" agent
 
-# Change default ubuntu user's GID so it doesn't collide with the requested GID for the agent user
-RUN UBUNTU_GID=$(id -g ubuntu) && \
-    if [ "${AGENT_GID}" = "${UBUNTU_GID}" ]; then \
-        groupmod -g $((UBUNTU_GID + 1)) ubuntu && usermod -g $((UBUNTU_GID + 1)) ubuntu; \
-    fi
-
-# Add non-root, non-sudoer agent user
-
-RUN groupadd --gid "${AGENT_GID}" agent \
-    && useradd --uid "${AGENT_UID}" --gid "${AGENT_GID}" --shell /usr/bin/zsh --create-home agent
-
-# Switch to non-root, non-sudoer agent user
 USER agent
 
 # Switch to workspace

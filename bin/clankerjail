@@ -51,7 +51,7 @@ msb run clankerjail \
   --env OPENROUTER_BASE_URL="${OPENROUTER_BASE_URL}" \
   $( [ -n "${OPENROUTER_API_KEY}" ] && echo "--secret OPENROUTER_API_KEY@openrouter.ai" ) \
   --tmpfs /tmp:4G:nodev,nosuid \
-  --mount-dir "${CLANKERJAIL_AGENT_USER_HOME_DIR:-${CLANKERJAIL_STATE_DIR:-${HOME}/.local/state/clankerjail}/home/agent}:/home/agent" \
+  --mount-dir "${CLANKERJAIL_AGENT_USER_HOME_DIR:-${CLANKERJAIL_STATE_DIR:-${HOME}/.local/state/clankerjail}/home/agent}:/home/agent:host-perms=mirror" \
   $( [ -n "${WORKSPACE}" ] && echo "--mount-dir ${WORKSPACE}:/workspace" ) \
   --net-default-egress deny \
   --net-rule "allow@public:tcp:443" \

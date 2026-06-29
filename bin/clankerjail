@@ -42,6 +42,7 @@ esac
 mkdir -p "${CLANKERJAIL_STATE_DIR}"
 mkdir -p "${CLANKERJAIL_AGENT_USER_HOME_DIR}"
 
+ulimit -n 1048576
 msb run clankerjail \
   --env TZ=$(get_tz) \
   --env ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL}" \

@@ -16,11 +16,10 @@ RUN apt-get update \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install locale-gen and add en_US.UTF-8
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     locales \
-    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
 
 # Install basic tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -29,18 +28,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install awesome tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    zsh fzf jq ripgrep bat git-flow htop dfc sqlite3 imagemagick ffmpeg sox \
-    rename rlwrap screen tree watchman \
+    zsh fzf jq ripgrep bat git-flow htop dfc sqlite3 imagemagick ffmpeg sox rename rlwrap screen tree watchman \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install some dependencies
 # ca-certificates: necessary for git-delta and others
 # build-essential, libz-dev, libyaml-dev: necessary for building ruby using rbenv
-RUN apt-get update &&  apt-get install -y --no-install-recommends \
-    ca-certificates \
-	build-essential libz-dev libyaml-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates build-essential libz-dev libyaml-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Install openssh-server
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssh-server \
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /run/sshd && chmod 755 /run/sshd \
+    && ssh-keygen -A
+
+# Install net utils
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	iputils-ping traceroute telnet dnsutils iperf nmap \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    
 # Install extra tools
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gh \
@@ -58,24 +67,9 @@ RUN ARCH=$(dpkg --print-architecture) \
 # Install Google Chrome
 RUN ARCH=$(dpkg --print-architecture) \
     && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/google-chrome.gpg \
-	&& ARCH=$(dpkg --print-architecture) echo "deb [arch=${ARCH} signed-by=/etc/apt/trusted.gpg.d/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list \
-	&& apt-get update \
-	&& apt-get install -y --no-install-recommends google-chrome-stable \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Install openssh-server
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    openssh-server \
-    && apt-get clean && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /run/sshd && chmod 755 /run/sshd
-
-
-# Generate ssh host keys
-RUN ssh-keygen -A
-
-# Install net utils
-RUN apt-get update && apt-get install -y --no-install-recommends \
-	iputils-ping traceroute telnet dnsutils iperf nmap \
+	&& echo "deb [arch=${ARCH} signed-by=/etc/apt/trusted.gpg.d/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list \
+	&& apt-get update && apt-get install -y --no-install-recommends \
+    google-chrome-stable \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ARG AGENT_UID=1000

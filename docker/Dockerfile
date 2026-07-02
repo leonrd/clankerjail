@@ -66,9 +66,9 @@ RUN ARCH=$(dpkg --print-architecture) \
 # Install openssh-server
 RUN apt-get update && apt-get install -y --no-install-recommends \
     openssh-server \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /run/sshd && chmod 755 /run/sshd
 
-RUN mkdir -p /run/sshd && chmod 755 /run/sshd
 
 # Generate ssh host keys
 RUN ssh-keygen -A

@@ -57,7 +57,7 @@ RUN ARCH=$(dpkg --print-architecture) \
 
 # Install Google Chrome
 RUN ARCH=$(dpkg --print-architecture) \
-    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | tee /etc/apt/trusted.gpg.d/google-chrome.gpg \
+    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/google-chrome.gpg \
 	&& ARCH=$(dpkg --print-architecture) echo "deb [arch=${ARCH} signed-by=/etc/apt/trusted.gpg.d/google-chrome.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | tee /etc/apt/sources.list.d/google-chrome.list \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends google-chrome-stable \

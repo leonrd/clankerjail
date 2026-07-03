@@ -89,9 +89,4 @@ RUN usermod -c "agent" agent
 
 USER agent
 
-# Switch to workspace
-WORKDIR /workspace
-
-EXPOSE 22/tcp
-
 CMD ["zsh", "-l"]

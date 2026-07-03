@@ -54,7 +54,7 @@ msb run clankerjail \
   $( [ -n "${NEURALWATT_API_KEY}" ] && echo "--secret NEURALWATT_API_KEY@api.neuralwatt.com" ) \
   --tmpfs /tmp:4G:nodev,nosuid \
   --mount-dir "${CLANKERJAIL_AGENT_USER_HOME_DIR:-${CLANKERJAIL_STATE_DIR:-${HOME}/.local/state/clankerjail}/home/agent}:/home/agent:host-perms=mirror" \
-  $( [ -n "${WORKSPACE}" ] && echo "--mount-dir ${WORKSPACE}:/workspace" ) \
+  $( [ -n "${WORKSPACE}" ] && echo "--mount-dir ${WORKSPACE}:/workspace" -w "/workspace" ) \
   --net-default-egress deny \
   --net-rule "allow@public:tcp:443" \
   --net-rule "allow@host:udp:53" \

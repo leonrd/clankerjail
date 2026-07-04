@@ -25,13 +25,6 @@ parse_flags "$@"
 
 . "${CLANKERJAIL_DIR}/helpers/get_tz.sh"
 
-CLANKERJAIL_STATE_DIR=${CLANKERJAIL_STATE_DIR:-"${HOME}/.local/state/clankerjail"}
-CLANKERJAIL_AGENT_USER_HOME_DIR=${CLANKERJAIL_AGENT_USER_HOME_DIR:-"${CLANKERJAIL_STATE_DIR}/home/agent"}
-
-# Prepare dirs
-mkdir -p "${CLANKERJAIL_STATE_DIR}"
-mkdir -p "${CLANKERJAIL_AGENT_USER_HOME_DIR}"
-
 ulimit -n 1048576
 msb run clankerjail \
   --env TZ=$(get_tz) \
@@ -43,7 +36,7 @@ msb run clankerjail \
   $( [ -n "${OPENAI_API_KEY}" ] && echo "--secret OPENAI_API_KEY@api.openai.com" ) \
   $( [ -n "${NEURALWATT_API_KEY}" ] && echo "--secret NEURALWATT_API_KEY@api.neuralwatt.com" ) \
   --tmpfs /tmp:4G:nodev,nosuid \
-  --mount-dir "${CLANKERJAIL_AGENT_USER_HOME_DIR:-${CLANKERJAIL_STATE_DIR:-${HOME}/.local/state/clankerjail}/home/agent}:/home/agent:host-perms=mirror" \
+  --mount-named agent-home:/home/agent:kind=disk,size=20G \
   $( [ -n "${WORKSPACE}" ] && echo "--mount-dir ${WORKSPACE}:/workspace" -w "/workspace" ) \
   --net-default-egress deny \
   --net-rule "allow@public:tcp:443" \

@@ -72,6 +72,9 @@ RUN ARCH=$(dpkg --print-architecture) \
     google-chrome-stable \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+RUN zsh_path=$(which zsh) \
+    && grep -qF "$zsh_path" /etc/shells || echo "$zsh_path" >> /etc/shells
+
 ARG AGENT_UID=1000
 ARG AGENT_GID=1000
 
@@ -86,6 +89,7 @@ RUN usermod -g "${AGENT_GID}" agent
 RUN usermod -d /home/agent -m agent
 # update the comment field of the user
 RUN usermod -c "agent" agent
+RUN zsh_path=$(which zsh) && usermod -s "$zsh_path" agent
 
 USER agent
 

@@ -28,16 +28,6 @@ parse_flags "$@"
 CLANKERJAIL_STATE_DIR=${CLANKERJAIL_STATE_DIR:-"${HOME}/.local/state/clankerjail"}
 CLANKERJAIL_AGENT_USER_HOME_DIR=${CLANKERJAIL_AGENT_USER_HOME_DIR:-"${CLANKERJAIL_STATE_DIR}/home/agent"}
 
-WORKSPACE="${WORKSPACE:-.}"
-# Adjust workspace for relative path support
-case "${WORKSPACE}" in
-  .) ;;
-  /*) ;;
-  ./*) ;;
-  ../*) ;;
-  *) WORKSPACE="./${WORKSPACE}" ;;
-esac
-
 # Prepare dirs
 mkdir -p "${CLANKERJAIL_STATE_DIR}"
 mkdir -p "${CLANKERJAIL_AGENT_USER_HOME_DIR}"

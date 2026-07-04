@@ -93,4 +93,6 @@ RUN zsh_path=$(which zsh) && usermod -s "$zsh_path" agent
 
 USER agent
 
+WORKDIR /home/agent
+
 CMD ["zsh", "-l"]

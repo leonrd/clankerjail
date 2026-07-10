@@ -25,7 +25,6 @@ parse_flags "$@"
 
 . "${CLANKERJAIL_DIR}/helpers/get_tz.sh"
 
-ulimit -n 1048576
 msb run clankerjail \
   --env TZ=$(get_tz) \
   --env ANTHROPIC_BASE_URL="${ANTHROPIC_BASE_URL}" \
